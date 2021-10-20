@@ -1,0 +1,16 @@
+{
+  "object": {
+    "pins": [
+      {
+        "package": "Alloy",
+        "repositoryURL": "https://github.com/s1ddok/Alloy.git",
+        "state": {
+          "branch": null,
+          "revision": "d1735f7163af5e9c0159708c3a82563d052ee845",
+          "version": "0.16.5"
+        }
+      }
+    ]
+  },
+  "version": 1
+}
