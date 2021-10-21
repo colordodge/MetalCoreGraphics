@@ -7,6 +7,16 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		02531F122721A832003F57C4 /* VectorMath.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02531F112721A832003F57C4 /* VectorMath.swift */; };
+		02531F152721AA66003F57C4 /* Test.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02531F132721A97D003F57C4 /* Test.swift */; };
+		029BB0822721CBFD006CDB6B /* MenuPageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 029BB0812721CBFD006CDB6B /* MenuPageViewController.swift */; };
+		029BB0842721CC1B006CDB6B /* MenuPageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 029BB0832721CC1B006CDB6B /* MenuPageView.swift */; };
+		029BB0862721CC3D006CDB6B /* UIView+Layout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 029BB0852721CC3D006CDB6B /* UIView+Layout.swift */; };
+		029BB0882721CC4F006CDB6B /* UIConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 029BB0872721CC4F006CDB6B /* UIConstants.swift */; };
+		029BB08B2721CC8D006CDB6B /* Slider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 029BB0892721CC8D006CDB6B /* Slider.swift */; };
+		029BB08C2721CC8D006CDB6B /* BaseSlider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 029BB08A2721CC8D006CDB6B /* BaseSlider.swift */; };
+		029BB08F2721CCB7006CDB6B /* Events.swift in Sources */ = {isa = PBXBuildFile; fileRef = 029BB08D2721CCB7006CDB6B /* Events.swift */; };
+		029BB0902721CCB7006CDB6B /* Fonts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 029BB08E2721CCB7006CDB6B /* Fonts.swift */; };
 		935E378D222DBC51000FA6D2 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 935E378C222DBC51000FA6D2 /* AppDelegate.swift */; };
 		935E378F222DBC51000FA6D2 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 935E378E222DBC51000FA6D2 /* ViewController.swift */; };
 		935E3792222DBC51000FA6D2 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 935E3790222DBC51000FA6D2 /* Main.storyboard */; };
@@ -17,6 +27,16 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		02531F112721A832003F57C4 /* VectorMath.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VectorMath.swift; sourceTree = "<group>"; };
+		02531F132721A97D003F57C4 /* Test.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Test.swift; sourceTree = "<group>"; };
+		029BB0812721CBFD006CDB6B /* MenuPageViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MenuPageViewController.swift; sourceTree = "<group>"; };
+		029BB0832721CC1B006CDB6B /* MenuPageView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MenuPageView.swift; sourceTree = "<group>"; };
+		029BB0852721CC3D006CDB6B /* UIView+Layout.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIView+Layout.swift"; sourceTree = "<group>"; };
+		029BB0872721CC4F006CDB6B /* UIConstants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIConstants.swift; sourceTree = "<group>"; };
+		029BB0892721CC8D006CDB6B /* Slider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Slider.swift; sourceTree = "<group>"; };
+		029BB08A2721CC8D006CDB6B /* BaseSlider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BaseSlider.swift; sourceTree = "<group>"; };
+		029BB08D2721CCB7006CDB6B /* Events.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Events.swift; sourceTree = "<group>"; };
+		029BB08E2721CCB7006CDB6B /* Fonts.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Fonts.swift; sourceTree = "<group>"; };
 		935E3789222DBC51000FA6D2 /* MetalCoreGraphics.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MetalCoreGraphics.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		935E378C222DBC51000FA6D2 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		935E378E222DBC51000FA6D2 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -41,6 +61,21 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		029BB0802721CBD1006CDB6B /* UI */ = {
+			isa = PBXGroup;
+			children = (
+				029BB0832721CC1B006CDB6B /* MenuPageView.swift */,
+				029BB0812721CBFD006CDB6B /* MenuPageViewController.swift */,
+				029BB0852721CC3D006CDB6B /* UIView+Layout.swift */,
+				029BB0872721CC4F006CDB6B /* UIConstants.swift */,
+				029BB08A2721CC8D006CDB6B /* BaseSlider.swift */,
+				029BB0892721CC8D006CDB6B /* Slider.swift */,
+				029BB08D2721CCB7006CDB6B /* Events.swift */,
+				029BB08E2721CCB7006CDB6B /* Fonts.swift */,
+			);
+			path = UI;
+			sourceTree = "<group>";
+		};
 		4DFEFCF1E0460230EC2A94B0 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
@@ -77,6 +112,9 @@
 				935E3795222DBC53000FA6D2 /* LaunchScreen.storyboard */,
 				935E3798222DBC53000FA6D2 /* Info.plist */,
 				935E379E222DC7CC000FA6D2 /* Shaders.metal */,
+				02531F112721A832003F57C4 /* VectorMath.swift */,
+				02531F132721A97D003F57C4 /* Test.swift */,
+				029BB0802721CBD1006CDB6B /* UI */,
 			);
 			path = MetalCoreGraphics;
 			sourceTree = "<group>";
@@ -158,8 +196,18 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				935E379F222DC7CC000FA6D2 /* Shaders.metal in Sources */,
+				029BB08F2721CCB7006CDB6B /* Events.swift in Sources */,
+				029BB0862721CC3D006CDB6B /* UIView+Layout.swift in Sources */,
+				029BB0902721CCB7006CDB6B /* Fonts.swift in Sources */,
 				935E378F222DBC51000FA6D2 /* ViewController.swift in Sources */,
+				029BB0882721CC4F006CDB6B /* UIConstants.swift in Sources */,
+				02531F122721A832003F57C4 /* VectorMath.swift in Sources */,
+				029BB08B2721CC8D006CDB6B /* Slider.swift in Sources */,
+				029BB0822721CBFD006CDB6B /* MenuPageViewController.swift in Sources */,
+				029BB0842721CC1B006CDB6B /* MenuPageView.swift in Sources */,
+				935E379F222DC7CC000FA6D2 /* Shaders.metal in Sources */,
+				029BB08C2721CC8D006CDB6B /* BaseSlider.swift in Sources */,
+				02531F152721AA66003F57C4 /* Test.swift in Sources */,
 				935E378D222DBC51000FA6D2 /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

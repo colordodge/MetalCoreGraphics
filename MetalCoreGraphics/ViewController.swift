@@ -22,6 +22,10 @@ func alignUp(size: Int, align: Int) -> Int {
     return (size + alignmentMask) & ~alignmentMask
 }
 
+struct FragmentUniforms {
+    var kNumSections: Float
+}
+
 class ViewController: UIViewController {
     
     @IBOutlet weak var metalView: MTKView!
@@ -34,9 +38,37 @@ class ViewController: UIViewController {
     var canvas: MTLTexture?
     
     var renderState: MTLRenderPipelineState?
+//    var fragmentUniformsBuffer: MTLBuffer!
+    
+    
+    var kNumSections: Float = 6.0
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        view.backgroundColor = .black
+        
+        let menu = MenuPageViewController()
+        addChild(menu)
+        view.addSubview(menu.view)
+        menu.didMove(toParent: self)
+        
+        menu.view.translatesAutoresizingMaskIntoConstraints = false
+        menu.view.pinLeading(toView: view, constant: 30)
+        menu.view.pinBottom(toView: view, constant: -30)
+        menu.view.widthAnchor.constraint(equalToConstant: 400).isActive = true
+//        menu.view.heightAnchor.constraint(equalToConstant: 300).isActive = true
+        
+        
+        let numSectionsSlider = Slider(title: "kNumSections", min: 1, max: 24, value: Double(kNumSections), isInt: true)
+        numSectionsSlider.onChange = { value in
+            self.kNumSections = Float(Int(value))
+        }
+        
+        menu.addComponent(numSectionsSlider)
+        
+        menu.constrainLastComponent()
+        
 
 //        let puppyImage = UIImage(named: "puppy")!
 
@@ -51,6 +83,9 @@ class ViewController: UIViewController {
 //                              sourceTexture: self.originalTexture!,
 //                              destinationTexture: self.blurredTexture!)
 //        }
+        
+        
+        
 
         let defaultLibrary = try! self.metalContext.library(for: .main)
         let fragment = defaultLibrary.makeFunction(name: "fragmentFunc")
@@ -60,6 +95,7 @@ class ViewController: UIViewController {
         descriptor.colorAttachments[0].pixelFormat = .bgra8Unorm
         descriptor.vertexFunction = vertex
         descriptor.fragmentFunction = fragment
+        
         
         
 //        descriptor.colorAttachments[0].isBlendingEnabled = true
@@ -87,14 +123,21 @@ class ViewController: UIViewController {
         self.metalView.delegate = self
         
         self.metalView.layer.isOpaque = false
+        
+        
+//        var initialFragmentUniforms = FragmentUniforms(kNumSections: 12.0)
+//        fragmentUniformsBuffer = self.metalContext.device.makeBuffer(bytes: &initialFragmentUniforms, length: MemoryLayout<FragmentUniforms>.stride, options: [])!
     }
 
     var lastPoint: CGPoint? = nil
 
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         let location = touches.first!.location(in: self.metalView)
-        let normalizedLocation = CGPoint(x: location.x / self.metalView.bounds.width,
+        var normalizedLocation = CGPoint(x: location.x / self.metalView.bounds.width,
                                          y: location.y / self.metalView.bounds.height)
+        
+        normalizedLocation = adjustPoint(normalizedLocation)
+        
         let maskLocation = CGPoint(x: normalizedLocation.x * CGFloat(self.cgContext!.width),
                                    y: normalizedLocation.y * CGFloat(self.cgContext!.height))
 
@@ -103,13 +146,16 @@ class ViewController: UIViewController {
 
     override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
         let location = touches.first!.location(in: self.metalView)
-        let normalizedLocation = CGPoint(x: location.x / self.metalView.bounds.width,
+        var normalizedLocation = CGPoint(x: location.x / self.metalView.bounds.width,
                                          y: location.y / self.metalView.bounds.height)
+        
+        normalizedLocation = adjustPoint(normalizedLocation)
+        
         let maskLocation = CGPoint(x: normalizedLocation.x * CGFloat(self.cgContext!.width),
                                    y: normalizedLocation.y * CGFloat(self.cgContext!.height))
 
-        self.cgContext?.move(to: self.lastPoint!)
-        self.cgContext?.addLine(to: maskLocation)
+        self.cgContext?.move(to: self.lastPoint! )
+        self.cgContext?.addLine(to: maskLocation )
         self.cgContext?.strokePath()
 
         self.lastPoint = maskLocation
@@ -122,6 +168,26 @@ class ViewController: UIViewController {
     override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
         lastPoint = nil
     }
+    
+    func adjustPoint(_ p: CGPoint) -> CGPoint {
+        let PI = 3.141592658
+        let TAU = PI * 2.0
+        let sections = Double(kNumSections)
+        
+        let shiftUV = Vector2(x: Scalar(p.x), y: Scalar(p.y)) - Vector2(x: 0.5, y: 0.5)
+        let radius = sqrt(shiftUV.dot(shiftUV))
+        var angle = atan2(shiftUV.y, shiftUV.x)
+        
+        let segmentAngle = TAU / sections
+        angle -= Float(segmentAngle) * floor(angle / Float(segmentAngle))
+        angle = min(angle, Float(segmentAngle) - angle)
+        
+        var newPos = Vector2(x: cos(angle), y: sin(angle))
+        newPos.x = newPos.x * radius + 0.5
+        newPos.y = newPos.y * radius + 0.5
+        
+        return CGPoint(x: Double(newPos.x), y: Double(newPos.y))
+    }
 }
 
 extension ViewController: MTKViewDelegate {
@@ -129,6 +195,11 @@ extension ViewController: MTKViewDelegate {
         try? self.metalContext.scheduleAndWait { buffer in
             buffer.render(descriptor: view.currentRenderPassDescriptor!) { encoder in
                 encoder.setRenderPipelineState(self.renderState!)
+                
+                var fragUniforms = FragmentUniforms(kNumSections: self.kNumSections)
+                encoder.setFragmentBytes(&fragUniforms, length: MemoryLayout<FragmentUniforms>.size, index: 0)
+                
+                
                 encoder.setFragmentTextures(self.canvas)
                 encoder.drawPrimitives(type: .triangleStrip, vertexStart: 0, vertexCount: 4)
             }
@@ -163,7 +234,7 @@ extension ViewController: MTKViewDelegate {
         context.scaleBy(x: 1.0, y: -1.0)
         context.translateBy(x: 0, y: -CGFloat(context.height))
         context.setLineJoin(.round)
-        context.setLineWidth(10)
+        context.setLineWidth(3)
 //        context.setStrokeColor(gray: 1.0, alpha: 1.0)
         context.setStrokeColor(UIColor.systemPink.cgColor)
 

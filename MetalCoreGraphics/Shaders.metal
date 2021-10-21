@@ -14,33 +14,10 @@ struct MTLTextureViewVertexOut {
     float2 uv;
 };
 
-float2 refl(float2 p,float2 o,float2 n) {
-    return 2.0*o+2.0*n*dot(p-o,n)-p;
-}
+struct FragmentUniforms {
+    float kNumSections;
+};
 
-//float2 rot(float2 p, float2 o, float a) {
-//    float s = sin(a);
-//    float c = cos(a);
-//    return o + mul((p - o), float2x2(c, -s, s, c));
-//}
-
-float2 hex(float2 pos, float scale) {
-    float l = sqrt(4.0/3.0);
-    // float2 uv = (coo - iResolution.xy*0.5)/min(iResolution.x,iResolution.y);
-    float2 uv = pos;
-    uv = uv * scale;
-    uv.y = abs(fract((uv.y-1.0)*0.5)*2.0-1.0);
-    uv.x = fract(uv.x/l/3.0)*l*3.0;
-    if(uv.y < 2.0*uv.x/l) uv = refl(uv, float2(0,0), float2(0.5, sqrt(0.75)));
-    if(uv.y > 1.0) uv = refl(uv, float2(0.0, 1.0), float2(1.0, 0.0));
-    if(uv.y < -2.0*uv.x/l) uv = refl(uv, float2(0,0), float2(-0.5, sqrt(0.75)));
-    if(uv.y < 2.0*uv.x/l) uv = refl(uv, float2(0,0), float2(0.5, sqrt(0.75)));
-    if(uv.y > 1.0) uv = refl(uv, float2(0.0, 1.0), float2(1.0, 0.0));
-    if(uv.y < -2.0*uv.x/l) uv = refl(uv, float2(0,0), float2(-0.5, sqrt(0.75)));
-    // uv.x = -uv.x*iChannelResolution[0].y/iChannelResolution[0].x + 0.5;
-    //    uv = rot(uv, float2(0.5, 0.5), _HexRotation + _Time*0.01);
-    return uv;
-}
 
 float2 kaleidoscope(float2 pos, float sections) {
     
@@ -89,6 +66,7 @@ vertex MTLTextureViewVertexOut vertexFunc(uint vid [[vertex_id]]) {
 }
 
 fragment half4 fragmentFunc(MTLTextureViewVertexOut in [[stage_in]],
+                            constant FragmentUniforms &uniforms [[buffer(0)]],
                             texture2d<half, access::sample> canvas [[texture(0)]])
 {
     constexpr sampler s(coord::normalized,
@@ -96,7 +74,7 @@ fragment half4 fragmentFunc(MTLTextureViewVertexOut in [[stage_in]],
                         filter::linear);
     
     float2 pos = in.uv;
-    pos = kaleidoscope(pos, 6.0f);
+    pos = kaleidoscope(pos, uniforms.kNumSections);
    
     half4 outColor = canvas.sample(s, pos);
   
