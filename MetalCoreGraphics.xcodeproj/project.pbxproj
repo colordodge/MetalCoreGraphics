@@ -17,6 +17,9 @@
 		029BB08C2721CC8D006CDB6B /* BaseSlider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 029BB08A2721CC8D006CDB6B /* BaseSlider.swift */; };
 		029BB08F2721CCB7006CDB6B /* Events.swift in Sources */ = {isa = PBXBuildFile; fileRef = 029BB08D2721CCB7006CDB6B /* Events.swift */; };
 		029BB0902721CCB7006CDB6B /* Fonts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 029BB08E2721CCB7006CDB6B /* Fonts.swift */; };
+		029BB0922721DECE006CDB6B /* MenuButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 029BB0912721DECE006CDB6B /* MenuButton.swift */; };
+		029BB0942721DEE6006CDB6B /* Asset.swift in Sources */ = {isa = PBXBuildFile; fileRef = 029BB0932721DEE6006CDB6B /* Asset.swift */; };
+		029BB0962721DEF7006CDB6B /* UIImage+InvertedImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 029BB0952721DEF7006CDB6B /* UIImage+InvertedImage.swift */; };
 		935E378D222DBC51000FA6D2 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 935E378C222DBC51000FA6D2 /* AppDelegate.swift */; };
 		935E378F222DBC51000FA6D2 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 935E378E222DBC51000FA6D2 /* ViewController.swift */; };
 		935E3792222DBC51000FA6D2 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 935E3790222DBC51000FA6D2 /* Main.storyboard */; };
@@ -37,6 +40,9 @@
 		029BB08A2721CC8D006CDB6B /* BaseSlider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BaseSlider.swift; sourceTree = "<group>"; };
 		029BB08D2721CCB7006CDB6B /* Events.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Events.swift; sourceTree = "<group>"; };
 		029BB08E2721CCB7006CDB6B /* Fonts.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Fonts.swift; sourceTree = "<group>"; };
+		029BB0912721DECE006CDB6B /* MenuButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MenuButton.swift; sourceTree = "<group>"; };
+		029BB0932721DEE6006CDB6B /* Asset.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Asset.swift; sourceTree = "<group>"; };
+		029BB0952721DEF7006CDB6B /* UIImage+InvertedImage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIImage+InvertedImage.swift"; sourceTree = "<group>"; };
 		935E3789222DBC51000FA6D2 /* MetalCoreGraphics.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MetalCoreGraphics.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		935E378C222DBC51000FA6D2 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		935E378E222DBC51000FA6D2 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -72,6 +78,9 @@
 				029BB0892721CC8D006CDB6B /* Slider.swift */,
 				029BB08D2721CCB7006CDB6B /* Events.swift */,
 				029BB08E2721CCB7006CDB6B /* Fonts.swift */,
+				029BB0932721DEE6006CDB6B /* Asset.swift */,
+				029BB0912721DECE006CDB6B /* MenuButton.swift */,
+				029BB0952721DEF7006CDB6B /* UIImage+InvertedImage.swift */,
 			);
 			path = UI;
 			sourceTree = "<group>";
@@ -198,15 +207,18 @@
 			files = (
 				029BB08F2721CCB7006CDB6B /* Events.swift in Sources */,
 				029BB0862721CC3D006CDB6B /* UIView+Layout.swift in Sources */,
+				029BB0922721DECE006CDB6B /* MenuButton.swift in Sources */,
 				029BB0902721CCB7006CDB6B /* Fonts.swift in Sources */,
 				935E378F222DBC51000FA6D2 /* ViewController.swift in Sources */,
 				029BB0882721CC4F006CDB6B /* UIConstants.swift in Sources */,
+				029BB0962721DEF7006CDB6B /* UIImage+InvertedImage.swift in Sources */,
 				02531F122721A832003F57C4 /* VectorMath.swift in Sources */,
 				029BB08B2721CC8D006CDB6B /* Slider.swift in Sources */,
 				029BB0822721CBFD006CDB6B /* MenuPageViewController.swift in Sources */,
 				029BB0842721CC1B006CDB6B /* MenuPageView.swift in Sources */,
 				935E379F222DC7CC000FA6D2 /* Shaders.metal in Sources */,
 				029BB08C2721CC8D006CDB6B /* BaseSlider.swift in Sources */,
+				029BB0942721DEE6006CDB6B /* Asset.swift in Sources */,
 				02531F152721AA66003F57C4 /* Test.swift in Sources */,
 				935E378D222DBC51000FA6D2 /* AppDelegate.swift in Sources */,
 			);

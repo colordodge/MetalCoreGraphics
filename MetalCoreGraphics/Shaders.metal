@@ -16,6 +16,9 @@ struct MTLTextureViewVertexOut {
 
 struct FragmentUniforms {
     float kNumSections;
+    float vigIntensity;
+    float vigExtent;
+    float time;
 };
 
 
@@ -77,7 +80,22 @@ fragment half4 fragmentFunc(MTLTextureViewVertexOut in [[stage_in]],
     pos = kaleidoscope(pos, uniforms.kNumSections);
    
     half4 outColor = canvas.sample(s, pos);
-  
+    
+    
+    
+    
+    
+    float2 uv = in.uv;
+    
+    uv *=  1.0 - uv.yx;   //vec2(1.0)- uv.yx; -> 1.-u.yx; Thanks FabriceNeyret !
+    
+    float vig = uv.x*uv.y * uniforms.vigIntensity; // multiply with sth for intensity
+    
+    vig = pow(vig, uniforms.vigExtent); // change pow for modifying the extend of the  vignette
+    
+    
+    outColor *= vig;
+    
     
     return outColor;
 }

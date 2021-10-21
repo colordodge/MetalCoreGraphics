@@ -16,7 +16,6 @@ class Slider: UIView {
     var value = 0.5
     var isInt = false
     var title = "Title"
-    var isRestricted: Bool
     var titleLabel: UILabel!
     var valueLabel: UILabel!
     var slider: BaseSlider!
@@ -26,14 +25,14 @@ class Slider: UIView {
     
     var onChange: ((Double) -> ())?
     
-    init(title: String, min: Double, max: Double, value: Double, isInt: Bool, isRestricted: Bool = false) {
-        self.isRestricted = isRestricted
+    init(title: String, min: Double, max: Double, value: Double, isInt: Bool, onChange: ((Double) -> ())? ) {
         super.init(frame: .zero)
         self.min = min
         self.max = max
         self.isInt = isInt
         self.title = title
         self.value = value
+        self.onChange = onChange
         translatesAutoresizingMaskIntoConstraints = false
     }
     
@@ -121,7 +120,7 @@ class Slider: UIView {
             let roundedValue = Int(round(value))
             valueLabel.text = String(roundedValue)
         } else {
-            let roundedValue = Double(round(100*value)/100)
+            let roundedValue = Double(round(1000*value)/1000)
             valueLabel.text = String(roundedValue)
         }
     }

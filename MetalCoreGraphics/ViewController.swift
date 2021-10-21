@@ -24,6 +24,9 @@ func alignUp(size: Int, align: Int) -> Int {
 
 struct FragmentUniforms {
     var kNumSections: Float
+    var vigIntensity: Float
+    var vigExtent: Float
+    var time: Float
 }
 
 class ViewController: UIViewController {
@@ -41,12 +44,25 @@ class ViewController: UIViewController {
 //    var fragmentUniformsBuffer: MTLBuffer!
     
     
-    var kNumSections: Float = 6.0
+    var kNumSections: Float = 12.0
+    var vigIntensity: Float = 15.0
+    var vigExtent: Float = 0.25
+    var time: Float = 0.0
+    var speed: Float = 0.003
+    
+    var strokeColor = UIColor.systemPink
 
     override func viewDidLoad() {
         super.viewDidLoad()
         
         view.backgroundColor = .black
+        
+        
+        let toggle = MenuButton(withAsset: .menuIcon)
+        view.addSubview(toggle)
+        toggle.pinLeading(toView: view, constant: 30)
+        toggle.pinBottom(toView: view, constant: -30)
+        
         
         let menu = MenuPageViewController()
         addChild(menu)
@@ -55,36 +71,34 @@ class ViewController: UIViewController {
         
         menu.view.translatesAutoresizingMaskIntoConstraints = false
         menu.view.pinLeading(toView: view, constant: 30)
-        menu.view.pinBottom(toView: view, constant: -30)
+        menu.view.bottomAnchor.constraint(equalTo: toggle.topAnchor, constant: -10).isActive = true
         menu.view.widthAnchor.constraint(equalToConstant: 400).isActive = true
-//        menu.view.heightAnchor.constraint(equalToConstant: 300).isActive = true
+        menu.view.isHidden = true
         
         
-        let numSectionsSlider = Slider(title: "kNumSections", min: 1, max: 24, value: Double(kNumSections), isInt: true)
-        numSectionsSlider.onChange = { value in
-            self.kNumSections = Float(Int(value))
+        toggle.tapAction = {
+            menu.view.isHidden = !menu.view.isHidden
         }
         
-        menu.addComponent(numSectionsSlider)
+        
+        menu.addComponent(Slider(title: "kNumSections", min: 1, max: 24, value: Double(kNumSections), isInt: true, onChange: { value in
+            self.kNumSections = Float(Int(value))
+        }))
+        
+        menu.addComponent(Slider(title: "vigIntensity", min: 1, max: 50, value: Double(vigIntensity), isInt: false, onChange: { value in
+            self.vigIntensity = Float(value)
+        }))
+        
+        menu.addComponent(Slider(title: "vigExtent", min: 0, max: 5, value: Double(vigExtent), isInt: false, onChange: { value in
+            self.vigExtent = Float(value)
+        }))
+        
+        menu.addComponent(Slider(title: "speed", min: 0.001, max: 0.1, value: Double(speed), isInt: false, onChange: { value in
+            self.speed = Float(value)
+        }))
+        
         
         menu.constrainLastComponent()
-        
-
-//        let puppyImage = UIImage(named: "puppy")!
-
-//        self.originalTexture = try? self.metalContext.texture(from: puppyImage.cgImage!, srgb: false)
-//        self.blurredTexture = try? self.originalTexture?.matchingTexture(usage: [.shaderRead, .shaderWrite])
-//
-//        let blurShader = MPSImageGaussianBlur(device: self.metalContext.device,
-//                                              sigma: 24.0)
-//
-//        try! self.metalContext.scheduleAndWait { buffer in
-//            blurShader.encode(commandBuffer: buffer,
-//                              sourceTexture: self.originalTexture!,
-//                              destinationTexture: self.blurredTexture!)
-//        }
-        
-        
         
 
         let defaultLibrary = try! self.metalContext.library(for: .main)
@@ -96,23 +110,7 @@ class ViewController: UIViewController {
         descriptor.vertexFunction = vertex
         descriptor.fragmentFunction = fragment
         
-        
-        
-//        descriptor.colorAttachments[0].isBlendingEnabled = true
-//        descriptor.colorAttachments[0].rgbBlendOperation = .add
-//        descriptor.colorAttachments[0].alphaBlendOperation = .add
-//        descriptor.colorAttachments[0].sourceRGBBlendFactor = .one
-//        descriptor.colorAttachments[0].sourceAlphaBlendFactor = .sourceAlpha
-//        descriptor.colorAttachments[0].destinationRGBBlendFactor = .oneMinusSourceAlpha
-//        descriptor.colorAttachments[0].destinationAlphaBlendFactor = .oneMinusSourceAlpha
-        
-//        descriptor.colorAttachments[0].isBlendingEnabled = true
-//        descriptor.colorAttachments[0].rgbBlendOperation = .add
-//        descriptor.colorAttachments[0].alphaBlendOperation = .add
-//        descriptor.colorAttachments[0].sourceRGBBlendFactor = .destinationAlpha
-//        descriptor.colorAttachments[0].sourceAlphaBlendFactor = .destinationAlpha
-//        descriptor.colorAttachments[0].destinationRGBBlendFactor = .oneMinusSourceAlpha
-//        descriptor.colorAttachments[0].destinationAlphaBlendFactor = .oneMinusBlendAlpha
+
 
         self.renderState = try! self.metalContext
                                     .device
@@ -124,9 +122,7 @@ class ViewController: UIViewController {
         
         self.metalView.layer.isOpaque = false
         
-        
-//        var initialFragmentUniforms = FragmentUniforms(kNumSections: 12.0)
-//        fragmentUniformsBuffer = self.metalContext.device.makeBuffer(bytes: &initialFragmentUniforms, length: MemoryLayout<FragmentUniforms>.stride, options: [])!
+
     }
 
     var lastPoint: CGPoint? = nil
@@ -154,6 +150,10 @@ class ViewController: UIViewController {
         let maskLocation = CGPoint(x: normalizedLocation.x * CGFloat(self.cgContext!.width),
                                    y: normalizedLocation.y * CGFloat(self.cgContext!.height))
 
+        let hue = time.truncatingRemainder(dividingBy: 1.0)
+        let color = UIColor(hue: CGFloat(hue), saturation: 1.0, brightness: 1.0, alpha: 1.0).cgColor
+        self.cgContext?.setStrokeColor(color)
+        
         self.cgContext?.move(to: self.lastPoint! )
         self.cgContext?.addLine(to: maskLocation )
         self.cgContext?.strokePath()
@@ -186,17 +186,23 @@ class ViewController: UIViewController {
         newPos.x = newPos.x * radius + 0.5
         newPos.y = newPos.y * radius + 0.5
         
+        newPos.x = max(min(newPos.x, 2.0-newPos.x), -newPos.x)
+        newPos.y = max(min(newPos.y, 2.0-newPos.y), -newPos.y)
+        
         return CGPoint(x: Double(newPos.x), y: Double(newPos.y))
     }
 }
 
 extension ViewController: MTKViewDelegate {
     func draw(in view: MTKView) {
+        
+        time += speed
+        
         try? self.metalContext.scheduleAndWait { buffer in
             buffer.render(descriptor: view.currentRenderPassDescriptor!) { encoder in
                 encoder.setRenderPipelineState(self.renderState!)
                 
-                var fragUniforms = FragmentUniforms(kNumSections: self.kNumSections)
+                var fragUniforms = FragmentUniforms(kNumSections: self.kNumSections, vigIntensity: self.vigIntensity, vigExtent: self.vigExtent, time: time)
                 encoder.setFragmentBytes(&fragUniforms, length: MemoryLayout<FragmentUniforms>.size, index: 0)
                 
                 
@@ -235,7 +241,6 @@ extension ViewController: MTKViewDelegate {
         context.translateBy(x: 0, y: -CGFloat(context.height))
         context.setLineJoin(.round)
         context.setLineWidth(3)
-//        context.setStrokeColor(gray: 1.0, alpha: 1.0)
         context.setStrokeColor(UIColor.systemPink.cgColor)
 
         let buffer = self.metalContext
