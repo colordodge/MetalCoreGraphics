@@ -29,27 +29,28 @@ class ViewController: UIViewController {
     let metalContext = try! MTLContext(device: Metal.device)
     var cgContext: CGContext?
 
-    var originalTexture: MTLTexture?
-    var blurredTexture: MTLTexture?
-    var mask: MTLTexture?
+//    var originalTexture: MTLTexture?
+//    var blurredTexture: MTLTexture?
+    var canvas: MTLTexture?
+    
     var renderState: MTLRenderPipelineState?
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        let puppyImage = UIImage(named: "puppy")!
+//        let puppyImage = UIImage(named: "puppy")!
 
-        self.originalTexture = try? self.metalContext.texture(from: puppyImage.cgImage!, srgb: false)
-        self.blurredTexture = try? self.originalTexture?.matchingTexture(usage: [.shaderRead, .shaderWrite])
-
-        let blurShader = MPSImageGaussianBlur(device: self.metalContext.device,
-                                              sigma: 24.0)
-
-        try! self.metalContext.scheduleAndWait { buffer in
-            blurShader.encode(commandBuffer: buffer,
-                              sourceTexture: self.originalTexture!,
-                              destinationTexture: self.blurredTexture!)
-        }
+//        self.originalTexture = try? self.metalContext.texture(from: puppyImage.cgImage!, srgb: false)
+//        self.blurredTexture = try? self.originalTexture?.matchingTexture(usage: [.shaderRead, .shaderWrite])
+//
+//        let blurShader = MPSImageGaussianBlur(device: self.metalContext.device,
+//                                              sigma: 24.0)
+//
+//        try! self.metalContext.scheduleAndWait { buffer in
+//            blurShader.encode(commandBuffer: buffer,
+//                              sourceTexture: self.originalTexture!,
+//                              destinationTexture: self.blurredTexture!)
+//        }
 
         let defaultLibrary = try! self.metalContext.library(for: .main)
         let fragment = defaultLibrary.makeFunction(name: "fragmentFunc")
@@ -59,6 +60,23 @@ class ViewController: UIViewController {
         descriptor.colorAttachments[0].pixelFormat = .bgra8Unorm
         descriptor.vertexFunction = vertex
         descriptor.fragmentFunction = fragment
+        
+        
+//        descriptor.colorAttachments[0].isBlendingEnabled = true
+//        descriptor.colorAttachments[0].rgbBlendOperation = .add
+//        descriptor.colorAttachments[0].alphaBlendOperation = .add
+//        descriptor.colorAttachments[0].sourceRGBBlendFactor = .one
+//        descriptor.colorAttachments[0].sourceAlphaBlendFactor = .sourceAlpha
+//        descriptor.colorAttachments[0].destinationRGBBlendFactor = .oneMinusSourceAlpha
+//        descriptor.colorAttachments[0].destinationAlphaBlendFactor = .oneMinusSourceAlpha
+        
+//        descriptor.colorAttachments[0].isBlendingEnabled = true
+//        descriptor.colorAttachments[0].rgbBlendOperation = .add
+//        descriptor.colorAttachments[0].alphaBlendOperation = .add
+//        descriptor.colorAttachments[0].sourceRGBBlendFactor = .destinationAlpha
+//        descriptor.colorAttachments[0].sourceAlphaBlendFactor = .destinationAlpha
+//        descriptor.colorAttachments[0].destinationRGBBlendFactor = .oneMinusSourceAlpha
+//        descriptor.colorAttachments[0].destinationAlphaBlendFactor = .oneMinusBlendAlpha
 
         self.renderState = try! self.metalContext
                                     .device
@@ -67,6 +85,8 @@ class ViewController: UIViewController {
         self.metalView.depthStencilPixelFormat = .invalid
         self.metalView.device = self.metalContext.device
         self.metalView.delegate = self
+        
+        self.metalView.layer.isOpaque = false
     }
 
     var lastPoint: CGPoint? = nil
@@ -109,7 +129,7 @@ extension ViewController: MTKViewDelegate {
         try? self.metalContext.scheduleAndWait { buffer in
             buffer.render(descriptor: view.currentRenderPassDescriptor!) { encoder in
                 encoder.setRenderPipelineState(self.renderState!)
-                encoder.setFragmentTextures(self.originalTexture, self.blurredTexture, self.mask)
+                encoder.setFragmentTextures(self.canvas)
                 encoder.drawPrimitives(type: .triangleStrip, vertexStart: 0, vertexCount: 4)
             }
 
@@ -121,8 +141,8 @@ extension ViewController: MTKViewDelegate {
         let width = Int(size.width)
         let height = Int(size.height)
 
-        let pixelRowAlignment = self.metalContext.device.minimumTextureBufferAlignment(for: .r8Unorm)
-        let bytesPerRow = alignUp(size: width, align: pixelRowAlignment)
+        let pixelRowAlignment = self.metalContext.device.minimumTextureBufferAlignment(for: .rgba8Unorm)
+        let bytesPerRow = alignUp(size: width, align: pixelRowAlignment) * 4
 
         let pagesize = Int(getpagesize())
         let allocationSize = alignUp(size: bytesPerRow * height, align: pagesize)
@@ -137,14 +157,15 @@ extension ViewController: MTKViewDelegate {
                                 height: height,
                                 bitsPerComponent: 8,
                                 bytesPerRow: bytesPerRow,
-                                space: CGColorSpaceCreateDeviceGray(),
-                                bitmapInfo: CGImageAlphaInfo.none.rawValue)!
+                                space: CGColorSpace(name: CGColorSpace.sRGB)!,
+                                bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue)!
 
         context.scaleBy(x: 1.0, y: -1.0)
         context.translateBy(x: 0, y: -CGFloat(context.height))
         context.setLineJoin(.round)
-        context.setLineWidth(64)
-        context.setStrokeColor(gray: 1.0, alpha: 1.0)
+        context.setLineWidth(10)
+//        context.setStrokeColor(gray: 1.0, alpha: 1.0)
+        context.setStrokeColor(UIColor.systemPink.cgColor)
 
         let buffer = self.metalContext
                          .device
@@ -154,14 +175,14 @@ extension ViewController: MTKViewDelegate {
                                      deallocator: { pointer, length in free(data) })!
 
         let textureDescriptor = MTLTextureDescriptor()
-        textureDescriptor.pixelFormat = .r8Unorm
+        textureDescriptor.pixelFormat = .rgba8Unorm
         textureDescriptor.width = context.width
         textureDescriptor.height = context.height
         textureDescriptor.storageMode = buffer.storageMode
         // we are only going to read from this texture on GPU side
         textureDescriptor.usage = .shaderRead
 
-        self.mask = buffer.makeTexture(descriptor: textureDescriptor,
+        self.canvas = buffer.makeTexture(descriptor: textureDescriptor,
                                        offset: 0,
                                        bytesPerRow: context.bytesPerRow)
         self.cgContext = context
